@@ -1,0 +1,96 @@
+from abc import ABCMeta, abstractmethod
+from typing import TYPE_CHECKING, Optional
+
+if TYPE_CHECKING:
+    from task_hive.job import Job
+
+
+class BaseQueue(metaclass=ABCMeta):
+
+    @abstractmethod
+    def enqueue(self, job: 'Job'):
+        """
+        将作业排队到队列中
+
+        :param job:
+        :return:
+        """
+        pass
+
+    @abstractmethod
+    def remove(self, job: 'Job'):
+        """
+        从队列中移除作业
+
+        :param job:
+        :return:
+        """
+        pass
+
+    @abstractmethod
+    def dequeue(self) -> Optional['Job']:
+        """
+        从队列中取出作业
+
+        :return:
+        """
+        pass
+
+    @property
+    @abstractmethod
+    def size(self) -> int:
+        """
+        获取队列中作业数量
+
+        :return:
+        """
+        pass
+
+    @abstractmethod
+    def clear(self):
+        """
+        清空队列
+
+        :return:
+        """
+        pass
+
+    @abstractmethod
+    def is_empty(self) -> bool:
+        """
+        判断队列是否为空
+
+        :return:
+        """
+        pass
+
+    @abstractmethod
+    def update_status(self, job: 'Job'):
+        """
+        更新队列中作业的状态
+
+        :return:
+        """
+        pass
+
+    @abstractmethod
+    def get_job(self, job_id: str) -> Optional['Job']:
+        """
+        获取队列中作业
+
+        :param job_id:
+        :return:
+        """
+        pass
+
+    @abstractmethod
+    def close(self):
+        """
+        关闭队列
+
+        :return:
+        """
+        pass
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()

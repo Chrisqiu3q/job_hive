@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "task-hive"
+version = "0.1.0"
+description = ""
+authors = ["YUNHAI <bybxbwg@foxmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+redis = {version = "^5.2.1", extras = ["redis"]}
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
