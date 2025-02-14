@@ -1,4 +1,4 @@
-# Task Hive
+# Job Hive
 
 基于Redis实现的轻量级分布式任务队列系统
 
@@ -20,8 +20,8 @@ pip install task_hive[redis]
 ## 🛠️ 使用示例
 
 ```python
-from task_hive import HiveWork
-from task_hive.queue import RedisQueue
+from job_hive import HiveWork
+from job_hive.queue import RedisQueue
 
 with HiveWork(queue=RedisQueue(
         name="test",
@@ -39,7 +39,7 @@ with HiveWork(queue=RedisQueue(
 ## ⚙️ 配置说明
 
 ```python
-from task_hive.queue import RedisQueue
+from job_hive.queue import RedisQueue
 
 RedisQueue(
     name="队列名称",  # 必填
