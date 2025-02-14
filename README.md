@@ -1,5 +1,7 @@
 # Job Hive
 
+[![PyPI version](https://badge.fury.io/py/job-hive.svg)](https://badge.fury.io/py/job-hive)
+
 基于Redis实现的轻量级分布式任务队列系统
 
 ## 🚀 功能特性
@@ -14,7 +16,7 @@
 > 目前仅支持Python3.10+，且目前只支持Redis队列实现
 
 ```bash
-pip install task_hive[redis]
+pip install job_hive[redis]
 ```
 
 ## 🛠️ 使用示例

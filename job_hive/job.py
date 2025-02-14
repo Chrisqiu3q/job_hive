@@ -3,8 +3,8 @@ import pickle
 import uuid
 from typing import Optional, Any
 
-from task_hive.core import Status
-from task_hive.utils import import_attribute, get_now
+from job_hive.core import Status
+from job_hive.utils import import_attribute, get_now
 
 
 class Job:

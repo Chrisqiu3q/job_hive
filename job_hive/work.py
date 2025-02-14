@@ -2,12 +2,12 @@ import time
 from concurrent.futures import ProcessPoolExecutor
 from typing import TYPE_CHECKING, Optional
 
-from task_hive.core import Status
-from task_hive.job import Job
-from task_hive.utils import get_now
+from job_hive.core import Status
+from job_hive.job import Job
+from job_hive.utils import get_now
 
 if TYPE_CHECKING:
-    from task_hive.base import BaseQueue
+    from job_hive.base import BaseQueue
 
 
 class HiveWork:

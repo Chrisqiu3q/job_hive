@@ -2,7 +2,7 @@ from abc import ABCMeta, abstractmethod
 from typing import TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:
-    from task_hive.job import Job
+    from job_hive.job import Job
 
 
 class BaseQueue(metaclass=ABCMeta):
