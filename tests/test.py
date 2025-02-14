@@ -1,5 +1,5 @@
-from task_hive.work import HiveWork
-from task_hive.queue.redis_queue import RedisQueue
+from job_hive.work import HiveWork
+from job_hive.queue.redis_queue import RedisQueue
 
 if __name__ == '__main__':
 
