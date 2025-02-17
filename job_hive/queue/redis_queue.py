@@ -1,10 +1,10 @@
 import pickle
 from typing import Optional
 
-from task_hive.base import BaseQueue
-from task_hive.core import Status
-from task_hive.utils import as_string, get_now
-from task_hive.job import Job
+from job_hive.base import BaseQueue
+from job_hive.core import Status
+from job_hive.utils import as_string, get_now
+from job_hive.job import Job
 
 try:
     import redis

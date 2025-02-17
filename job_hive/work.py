@@ -27,6 +27,22 @@ class HiveWork:
 
     def work(self, prefetching: int = 1, waiting: int = 3, concurrent: int = 1):
         self.logger = LiveLogger()
+        self.logger.info(r"""
+        
+   $$$$$\  $$$$$$\  $$$$$$$\          $$\   $$\ $$$$$$\ $$\    $$\ $$$$$$$$\ 
+   \__$$ |$$  __$$\ $$  __$$\         $$ |  $$ |\_$$  _|$$ |   $$ |$$  _____|
+      $$ |$$ /  $$ |$$ |  $$ |        $$ |  $$ |  $$ |  $$ |   $$ |$$ |      
+      $$ |$$ |  $$ |$$$$$$$\ |$$$$$$\ $$$$$$$$ |  $$ |  \$$\  $$  |$$$$$\    
+$$\   $$ |$$ |  $$ |$$  __$$\ \______|$$  __$$ |  $$ |   \$$\$$  / $$  __|   
+$$ |  $$ |$$ |  $$ |$$ |  $$ |        $$ |  $$ |  $$ |    \$$$  /  $$ |      
+\$$$$$$  | $$$$$$  |$$$$$$$  |        $$ |  $$ |$$$$$$\    \$  /   $$$$$$$$\ 
+ \______/  \______/ \_______/         \__|  \__|\______|    \_/    \________|
+
+prefetching: {}
+waiting: {}
+concurrent: {}
+Started work...
+""".format(prefetching, waiting, concurrent))
         self._process_pool = ProcessPoolExecutor(max_workers=concurrent)
         run_jobs = {}
         while True:
@@ -48,15 +64,15 @@ class HiveWork:
                     finally:
                         self._queue.update_status(job)
                 run_jobs = flush_jobs
-
-            job = self.pop()
-            if job is None:
-                time.sleep(waiting)
-                continue
-            self.logger.info(f"Started job: {job.job_id}")
-            future = self._process_pool.submit(job)
-            run_jobs[job.job_id] = (future, job)
-            self._queue.update_status(job)
+            else:
+                job = self.pop()
+                if job is None:
+                    time.sleep(waiting)
+                    continue
+                self.logger.info(f"Started job: {job.job_id}")
+                future = self._process_pool.submit(job)
+                run_jobs[job.job_id] = (future, job)
+                self._queue.update_status(job)
 
     def get_job(self, job_id: str) -> Optional['Job']:
         return self._queue.get_job(job_id)
