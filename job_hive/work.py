@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Optional
 
 from job_hive.core import Status
 from job_hive.job import Job
+from job_hive.logger import LiveLogger
 from job_hive.utils import get_now
 
 if TYPE_CHECKING:
@@ -12,6 +13,7 @@ if TYPE_CHECKING:
 
 class HiveWork:
     def __init__(self, queue: 'BaseQueue'):
+        self.logger: Optional[LiveLogger] = None
         self._queue = queue
         self._process_pool: Optional[ProcessPoolExecutor] = None
 
@@ -24,6 +26,7 @@ class HiveWork:
         return self._queue.dequeue()
 
     def work(self, prefetching: int = 1, waiting: int = 3, concurrent: int = 1):
+        self.logger = LiveLogger()
         self._process_pool = ProcessPoolExecutor(max_workers=concurrent)
         run_jobs = {}
         while True:
@@ -37,9 +40,11 @@ class HiveWork:
                     try:
                         job.query["result"] = str(future.result())
                         job.query["status"] = Status.SUCCESS.value
+                        self.logger.info(f"Successes job: {job.job_id}")
                     except Exception as e:
                         job.query["error"] = str(e)
                         job.query["status"] = Status.FAILURE.value
+                        self.logger.error(f"Failures job: {job.job_id}")
                     finally:
                         self._queue.update_status(job)
                 run_jobs = flush_jobs
@@ -48,6 +53,7 @@ class HiveWork:
             if job is None:
                 time.sleep(waiting)
                 continue
+            self.logger.info(f"Started job: {job.job_id}")
             future = self._process_pool.submit(job)
             run_jobs[job.job_id] = (future, job)
             self._queue.update_status(job)
@@ -62,3 +68,11 @@ class HiveWork:
 
     def __enter__(self):
         return self
+
+    def __del__(self):
+        if self._process_pool is None:
+            return
+        self._process_pool.shutdown()
+
+    def __repr__(self):
+        return f"<HiveWork queue={self._queue}>"

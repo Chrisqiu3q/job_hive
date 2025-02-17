@@ -110,3 +110,6 @@ class RedisQueue(BaseQueue):
 
     def is_empty(self) -> bool:
         return bool(self.conn.llen(self._queue_name))
+
+    def __repr__(self):
+        return f"RedisQueue(name={self._queue_name})"

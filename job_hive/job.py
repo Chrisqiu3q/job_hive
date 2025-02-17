@@ -90,3 +90,6 @@ class Job:
 
     def __call__(self, *args, **kwargs):
         import_attribute(self.func)(*self._args, **self._kwargs)
+
+    def __repr__(self):
+        return f"[Job {self.job_id}]"
