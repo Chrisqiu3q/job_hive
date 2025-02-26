@@ -45,13 +45,11 @@ class Job:
 
     @property
     def result(self) -> Any:
-        result = self.query.get("result", None)
-        return self._dumps(result)
+        return self.query.get("result", None)
 
     @property
     def error(self) -> Any:
-        error = self.query.get("error", None)
-        return self._dumps(error)
+        return self.query.get("error", None)
 
     def dumps(self) -> dict:
         return {
@@ -63,8 +61,8 @@ class Job:
             "started_at": self.started_at,
             "ended_at": self.ended_at,
             "status": self.status,
-            "result": self.result,
-            "error": self.error,
+            "result": self._dumps(self.result),
+            "error": self._dumps(self.error),
         }
 
     @staticmethod
@@ -76,7 +74,7 @@ class Job:
         )
         job.job_id = obj["job_id"]
 
-        for key in ["created_at", "updated_at", "ended_at", "started_at", "status", "result", "error"]:
+        for key in ["created_at", "ended_at", "started_at", "status", "result", "error"]:
             job.query[key] = obj.get(key, '')
         return job
 
@@ -89,7 +87,10 @@ class Job:
         return pickle.loads(obj)
 
     def __call__(self, *args, **kwargs):
-        import_attribute(self.func)(*self._args, **self._kwargs)
+        func = import_attribute(self.func)
+        if hasattr(func, '__wrapped__'):
+            func = func.__wrapped__
+        return func(*self._args, **self._kwargs)
 
     def __repr__(self):
         return f"[Job {self.job_id}]"

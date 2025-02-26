@@ -84,6 +84,17 @@ class BaseQueue(metaclass=ABCMeta):
         pass
 
     @abstractmethod
+    def ttl(self, job_id: str, ttl: int):
+        """
+        设置队列中作业的过期时间
+
+        :param job_id:
+        :param ttl:
+        :return:
+        """
+        pass
+
+    @abstractmethod
     def close(self):
         """
         关闭队列

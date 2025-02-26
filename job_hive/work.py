@@ -1,5 +1,6 @@
 import time
 from concurrent.futures import ProcessPoolExecutor
+from functools import wraps
 from typing import TYPE_CHECKING, Optional
 
 from job_hive.core import Status
@@ -8,7 +9,7 @@ from job_hive.logger import LiveLogger
 from job_hive.utils import get_now
 
 if TYPE_CHECKING:
-    from job_hive.base import BaseQueue
+    from job_hive.queue.base import BaseQueue
 
 
 class HiveWork:
@@ -17,7 +18,7 @@ class HiveWork:
         self._queue = queue
         self._process_pool: Optional[ProcessPoolExecutor] = None
 
-    def push(self, func, *args, **kwargs):
+    def push(self, func, *args, **kwargs) -> 'Job':
         job = Job(func, *args, **kwargs)
         self._queue.enqueue(job)
         return job
@@ -57,6 +58,7 @@ Started work...
                         job.query["result"] = str(future.result())
                         job.query["status"] = Status.SUCCESS.value
                         self.logger.info(f"Successes job: {job.job_id}")
+                        self._queue.ttl(job.job_id, 24 * 60 * 60)
                     except Exception as e:
                         job.query["error"] = str(e)
                         job.query["status"] = Status.FAILURE.value
@@ -76,6 +78,19 @@ Started work...
 
     def get_job(self, job_id: str) -> Optional['Job']:
         return self._queue.get_job(job_id)
+
+    def task(self):
+        def decorator(func):
+            @wraps(func)
+            def wrapper(*args, **kwargs) -> 'Job':
+                return self.push(func, *args, **kwargs)
+
+            return wrapper
+
+        return decorator
+
+    def __len__(self) -> int:
+        return self._queue.size
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         if self._process_pool is None:

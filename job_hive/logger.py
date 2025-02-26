@@ -1,5 +1,6 @@
 from logging import Logger, Formatter, StreamHandler, DEBUG, INFO, WARNING, ERROR, CRITICAL
 from typing import Union, Optional
+import sys
 
 
 class LiveLogger(Logger):

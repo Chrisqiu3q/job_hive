@@ -1,7 +1,7 @@
 import pickle
 from typing import Optional
 
-from job_hive.base import BaseQueue
+from job_hive.queue.base import BaseQueue
 from job_hive.core import Status
 from job_hive.utils import as_string, get_now
 from job_hive.job import Job
@@ -107,6 +107,9 @@ class RedisQueue(BaseQueue):
     @property
     def size(self) -> int:
         return self.conn.llen(self._queue_name)
+
+    def ttl(self, job_id: str, ttl: int):
+        self.conn.expire(name=f"hive:job:{job_id}", time=ttl)
 
     def is_empty(self) -> bool:
         return bool(self.conn.llen(self._queue_name))

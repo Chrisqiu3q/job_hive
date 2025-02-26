@@ -13,11 +13,13 @@
 
 ## 📦 安装依赖
 
-> 目前仅支持Python3.10+，且目前只支持Redis队列实现
+> 目前仅支持Python3.10+，于 0.1.3 版本在原来 Redis 的基础上，加入简易版本的 Kafka 支持
 
 ```bash
 pip install job_hive[redis]
 ```
+
+
 
 ## 🛠️ 使用示例
 
