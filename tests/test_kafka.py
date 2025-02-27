@@ -1,5 +1,5 @@
-from job_hive.queue.kafka_queue import KafkaQueue
-from job_hive.work import HiveWork
+from job_hive.queue import KafkaQueue
+from job_hive import HiveWork
 
 work = HiveWork(queue=KafkaQueue(
     topic_name='test',

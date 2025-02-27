@@ -1,5 +1,5 @@
-from job_hive.queue.redis_queue import RedisQueue
-from job_hive.work import HiveWork
+from job_hive.queue import RedisQueue
+from job_hive import HiveWork
 
 work = HiveWork(queue=RedisQueue(name="test", host="192.168.6.99", password="redis-test"))
 

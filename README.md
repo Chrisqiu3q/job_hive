@@ -15,11 +15,17 @@
 
 > 目前仅支持Python3.10+，于 0.1.3 版本在原来 Redis 的基础上，加入简易版本的 Kafka 支持
 
+使用 redis
+
 ```bash
 pip install job_hive[redis]
 ```
 
+使用 kafka
 
+```bash
+pip install job_hive[kafka]
+```
 
 ## 🛠️ 使用示例
 
@@ -43,7 +49,7 @@ with HiveWork(queue=RedisQueue(
 ## ⚙️ 配置说明
 
 ```python
-from job_hive.queue import RedisQueue
+from job_hive.queue import RedisQueue, KafkaQueue
 
 RedisQueue(
     name="队列名称",  # 必填
@@ -51,6 +57,11 @@ RedisQueue(
     port=6379,  # 默认端口
     password=None,  # 密码（可选）
     db=0  # 数据库编号，默认为0
+)
+
+KafkaQueue(
+    topic_name='test', # 主题
+    servers='1Panel-kafka-3wvJ:9092' # Kafka 服务
 )
 ```
 
