@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "job-hive"
-version = "0.1.3"
+version = "0.1.4"
 description = "一个极简的分布式任务模块"
 authors = ["YUNHAI <bybxbwg@foxmail.com>"]
 readme = "README.md"
