@@ -78,7 +78,7 @@ class RedisQueue(BaseQueue):
         )
 
         job_mapping = self.conn.hgetall(name=f"hive:job:{job_id}")
-        return Job.loads(self._transform_job_mapping(job_mapping))
+        return Job._loads(self._transform_job_mapping(job_mapping))
 
     def update_status(self, job: 'Job'):
         self.conn.hset(
@@ -93,7 +93,7 @@ class RedisQueue(BaseQueue):
         job_mapping = self.conn.hgetall(name=f"hive:job:{job_id}")
         if not job_mapping:
             return None
-        return Job.loads(self._transform_job_mapping(job_mapping))
+        return Job._loads(self._transform_job_mapping(job_mapping))
 
     @staticmethod
     def _transform_job_mapping(job_mapping: dict):

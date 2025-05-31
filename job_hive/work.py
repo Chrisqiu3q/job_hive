@@ -1,4 +1,5 @@
 import time
+import traceback
 from concurrent.futures import ProcessPoolExecutor
 from functools import wraps
 from typing import TYPE_CHECKING, Optional
@@ -18,15 +19,15 @@ class HiveWork:
         self._queue = queue
         self._process_pool: Optional[ProcessPoolExecutor] = None
 
-    def push(self, func, *args, **kwargs) -> 'Job':
+    def push(self, func, *args, **kwargs) -> str:
         job = Job(func, *args, **kwargs)
         self._queue.enqueue(job)
-        return job
+        return job.job_id
 
     def pop(self) -> Optional['Job']:
         return self._queue.dequeue()
 
-    def work(self, prefetching: int = 1, waiting: int = 3, concurrent: int = 1):
+    def work(self, prefetching: int = 1, waiting: int = 3, concurrent: int = 1, result_ttl: int = 24 * 60 * 60):
         self.logger = LiveLogger()
         self.logger.info(r"""
         
@@ -42,8 +43,9 @@ $$ |  $$ |$$ |  $$ |$$ |  $$ |        $$ |  $$ |  $$ |    \$$$  /  $$ |
 prefetching: {}
 waiting: {}
 concurrent: {}
+result ttl: {}
 Started work...
-""".format(prefetching, waiting, concurrent))
+""".format(prefetching, waiting, concurrent, result_ttl))
         self._process_pool = ProcessPoolExecutor(max_workers=concurrent)
         run_jobs = {}
         while True:
@@ -58,9 +60,9 @@ Started work...
                         job.query["result"] = str(future.result())
                         job.query["status"] = Status.SUCCESS.value
                         self.logger.info(f"Successes job: {job.job_id}")
-                        self._queue.ttl(job.job_id, 24 * 60 * 60)
+                        self._queue.ttl(job.job_id, result_ttl)
                     except Exception as e:
-                        job.query["error"] = str(e)
+                        job.query["error"] = "{}\n{}".format( e, traceback.format_exc())
                         job.query["status"] = Status.FAILURE.value
                         self.logger.error(f"Failures job: {job.job_id}")
                     finally:
@@ -82,7 +84,7 @@ Started work...
     def task(self):
         def decorator(func):
             @wraps(func)
-            def wrapper(*args, **kwargs) -> 'Job':
+            def wrapper(*args, **kwargs) -> str:
                 return self.push(func, *args, **kwargs)
 
             return wrapper

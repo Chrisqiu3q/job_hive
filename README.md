@@ -40,10 +40,10 @@ with HiveWork(queue=RedisQueue(
 )) as work:
     # 使用work 对象进行任务推送提交到任务池
     jobs = [work.push(print, f"hello {i}") for i in range(5)]
-    for job in jobs:
-        print(job.status)
+    for job_id in jobs:
+        print(f"Job ID: {job_id}")
     # 启动工作模式接收任务
-    work.work()
+    work.work(result_ttl=86400)  # result_ttl 参数设置结果保留时间，默认为24小时
 ```
 
 ## ⚙️ 配置说明

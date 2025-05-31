@@ -1,15 +1,14 @@
 from job_hive.queue import RedisQueue
 from job_hive import HiveWork
 
-work = HiveWork(queue=RedisQueue(name="test", host="192.168.6.99", password="redis-test"))
+work = HiveWork(queue=RedisQueue(name="test"))
 
 
 @work.task()
 def hello(index):
     print('你是', index)
+    raise Exception('test')
 
 
 if __name__ == '__main__':
-    hello(1)
-
-    work.work()
+    work.work(result_ttl=30)

@@ -66,7 +66,7 @@ class Job:
         }
 
     @staticmethod
-    def loads(obj: dict) -> 'Job':
+    def _loads(obj: dict) -> 'Job':
         job = Job(
             obj["func"],
             *obj["args"],
@@ -81,10 +81,6 @@ class Job:
     @staticmethod
     def _dumps(obj: Any) -> bytes:
         return pickle.dumps(obj)
-
-    @staticmethod
-    def _loads(obj: bytes) -> Any:
-        return pickle.loads(obj)
 
     def __call__(self, *args, **kwargs):
         func = import_attribute(self.func)
