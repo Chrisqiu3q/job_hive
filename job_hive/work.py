@@ -81,6 +81,14 @@ Started work...
     def get_job(self, job_id: str) -> Optional['Job']:
         return self._queue.get_job(job_id)
 
+    def wait(self, job_id: str) -> Optional['Job']:
+        while True:
+            job: Job = self.get_job(job_id)
+            if job is None: return None
+            if job.status in (Status.SUCCESS, Status.FAILURE):
+                return job
+            time.sleep(5)
+
     def task(self):
         def decorator(func):
             @wraps(func)
