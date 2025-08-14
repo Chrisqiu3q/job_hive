@@ -1,15 +1,18 @@
 [tool.poetry]
 name = "job-hive"
-version = "0.1.6"
+version = "0.1.7"
 description = "一个极简的分布式任务模块"
 authors = ["YUNHAI <bybxbwg@foxmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-redis = {version = "^5.2.1", extras = ["redis"]}
-confluent-kafka = {version = "^2.8.0", extras = ["kafka"]}
+redis = "^6.4.0"
+confluent-kafka = "^2.8.0"
 
+[tool.poetry.extras]
+redis = ["redis"]
+kafka = ["confluent-kafka"]
 
 [build-system]
 requires = ["poetry-core"]
