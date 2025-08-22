@@ -8,11 +8,11 @@ if TYPE_CHECKING:
 class BaseQueue(metaclass=ABCMeta):
 
     @abstractmethod
-    def enqueue(self, job: 'Job'):
+    def enqueue(self, *args: 'Job'):
         """
         将作业排队到队列中
 
-        :param job:
+        :param args: 作业对象或作业对象列表
         :return:
         """
         pass
@@ -22,7 +22,7 @@ class BaseQueue(metaclass=ABCMeta):
         """
         从队列中移除作业
 
-        :param job:
+        :param job: 作业对象
         :return:
         """
         pass

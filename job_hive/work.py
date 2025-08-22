@@ -10,7 +10,7 @@ from job_hive.logger import LiveLogger
 from job_hive.utils import get_now
 
 if TYPE_CHECKING:
-    from job_hive.queue.base import BaseQueue
+    from job_hive.queue import BaseQueue
 
 
 class HiveWork:
@@ -62,7 +62,7 @@ Started work...
                         self.logger.info(f"Successes job: {job.job_id}")
                         self._queue.ttl(job.job_id, result_ttl)
                     except Exception as e:
-                        job.query["error"] = "{}\n{}".format( e, traceback.format_exc())
+                        job.query["error"] = "{}\n{}".format(e, traceback.format_exc())
                         job.query["status"] = Status.FAILURE.value
                         self.logger.error(f"Failures job: {job.job_id}")
                     finally:
@@ -98,6 +98,25 @@ Started work...
             return wrapper
 
         return decorator
+
+    def delay_task(self):
+        def decorator(func):
+            @wraps(func)
+            def wrapper(*args, **kwargs) -> 'Job':
+                job = Job(func, *args, **kwargs)
+                return job
+
+            return wrapper
+
+        return decorator
+
+    def group_commit(self, group: 'Group'):
+        """
+        Commit a group of jobs to the queue.
+        """
+        with group:
+            self._queue.enqueue(*group.jobs)
+        return group
 
     def __len__(self) -> int:
         return self._queue.size

@@ -1,14 +1,23 @@
 from job_hive.queue import RedisQueue
 from job_hive import HiveWork
+from job_hive import Group
 
-work = HiveWork(queue=RedisQueue(name="test"))
+work = HiveWork(queue=RedisQueue(name="test", host='192.168.11.157', password='yunhai'))
 
 
-@work.task()
+@work.delay_task()
 def hello(index):
     print('你是', index)
     raise Exception('test')
 
 
 if __name__ == '__main__':
+    group = Group(
+        hello(1),
+        hello(2),
+        hello(3),
+        hello(4),
+        hello(5),
+    )
+    work.group_commit(group)
     work.work(result_ttl=30)

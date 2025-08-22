@@ -36,15 +36,16 @@ class RedisQueue(BaseQueue):
     def conn(self):
         return redis.Redis(connection_pool=self._pool)
 
-    def enqueue(self, job: 'Job'):
-        job.query['created_at'] = job.created_at
-        self.conn.hset(
-            name=f"hive:job:{job.job_id}",
-            mapping=job.dumps()
-        )
+    def enqueue(self, *args: 'Job'):
+        for job in args:
+            job.query['created_at'] = job.created_at
+            self.conn.hset(
+                name=f"hive:job:{job.job_id}",
+                mapping=job.dumps()
+            )
         self.conn.rpush(
             self._queue_name,
-            job.job_id
+            *(job.job_id for job in args)
         )
 
     def remove(self, job: 'Job'):
