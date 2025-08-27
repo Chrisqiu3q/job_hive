@@ -1,4 +1,5 @@
 import inspect
+import json
 import pickle
 import uuid
 from typing import Optional, Any
@@ -81,6 +82,21 @@ class Job:
     @staticmethod
     def _dumps(obj: Any) -> bytes:
         return pickle.dumps(obj)
+
+    @property
+    def detail(self):
+        return json.dumps({
+            "job_id": self.job_id,
+            "func": self.func.__name__,
+            "args": str(self._args),
+            "kwargs": str(self._kwargs),
+            "created_at": self.created_at,
+            "started_at": self.started_at,
+            "ended_at": self.ended_at,
+            "status": self.status.value,
+            "result": self.result,
+            "error": self.error,
+        }, indent=4, ensure_ascii=False)
 
     def __call__(self, *args, **kwargs):
         func = import_attribute(self.func)

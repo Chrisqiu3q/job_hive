@@ -8,6 +8,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.10"
 redis = "^6.4.0"
+click = "^8.2.1"
 
 [tool.poetry.extras]
 redis = ["redis"]
@@ -15,3 +16,5 @@ redis = ["redis"]
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]

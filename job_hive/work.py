@@ -3,6 +3,8 @@ import traceback
 from concurrent.futures import ProcessPoolExecutor
 from functools import wraps
 from typing import TYPE_CHECKING, Optional
+from socket import gethostname
+from uuid import uuid4
 
 from job_hive.core import Status
 from job_hive.job import Job
@@ -10,11 +12,12 @@ from job_hive.logger import LiveLogger
 from job_hive.utils import get_now
 
 if TYPE_CHECKING:
-    from job_hive.queue import BaseQueue
+    from job_hive.queue import RedisQueue
+    from job_hive import Group
 
 
 class HiveWork:
-    def __init__(self, queue: 'BaseQueue'):
+    def __init__(self, queue: 'RedisQueue'):
         self.logger: Optional[LiveLogger] = None
         self._queue = queue
         self._process_pool: Optional[ProcessPoolExecutor] = None
@@ -133,6 +136,7 @@ Started work...
         if self._process_pool is None:
             return
         self._process_pool.shutdown()
+
 
     def __repr__(self):
         return f"<HiveWork queue={self._queue}>"
