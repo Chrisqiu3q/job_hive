@@ -19,10 +19,10 @@
 使用 redis
 
 ```bash
-pip install job_hive[redis]
+pip install job_hive
 ```
 
-使用 kafka
+~~使用 kafka~~
 
 ```bash
 pip install job_hive[kafka]

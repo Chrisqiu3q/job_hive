@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "job-hive"
-version = "0.1.8"
+version = "0.1.9"
 description = "一个极简的分布式任务模块"
 authors = ["YUNHAI <bybxbwg@foxmail.com>"]
 readme = "README.md"
@@ -10,8 +10,6 @@ python = "^3.10"
 redis = "^6.4.0"
 click = "^8.2.1"
 
-[tool.poetry.extras]
-redis = ["redis"]
 
 [build-system]
 requires = ["poetry-core"]

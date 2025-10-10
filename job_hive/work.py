@@ -3,8 +3,6 @@ import traceback
 from concurrent.futures import ProcessPoolExecutor
 from functools import wraps
 from typing import TYPE_CHECKING, Optional
-from socket import gethostname
-from uuid import uuid4
 
 from job_hive.core import Status
 from job_hive.job import Job
@@ -33,7 +31,6 @@ class HiveWork:
     def work(self, prefetching: int = 1, waiting: int = 3, concurrent: int = 1, result_ttl: int = 24 * 60 * 60):
         self.logger = LiveLogger()
         self.logger.info(r"""
-        
    $$$$$\  $$$$$$\  $$$$$$$\          $$\   $$\ $$$$$$\ $$\    $$\ $$$$$$$$\ 
    \__$$ |$$  __$$\ $$  __$$\         $$ |  $$ |\_$$  _|$$ |   $$ |$$  _____|
       $$ |$$ /  $$ |$$ |  $$ |        $$ |  $$ |  $$ |  $$ |   $$ |$$ |      
@@ -136,7 +133,6 @@ Started work...
         if self._process_pool is None:
             return
         self._process_pool.shutdown()
-
 
     def __repr__(self):
         return f"<HiveWork queue={self._queue}>"
