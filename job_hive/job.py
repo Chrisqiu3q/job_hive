@@ -102,6 +102,9 @@ class Job:
         func = import_attribute(self.func)
         if hasattr(func, '__wrapped__'):
             func = func.__wrapped__
+        # If args are provided (from pipeline), use them; otherwise use self._args
+        if args:
+            return func(*args, **self._kwargs)
         return func(*self._args, **self._kwargs)
 
     def __repr__(self):

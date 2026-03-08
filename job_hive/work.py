@@ -12,6 +12,7 @@ from job_hive.utils import get_now
 if TYPE_CHECKING:
     from job_hive.queue import RedisQueue
     from job_hive import Group
+    from job_hive import Pipeline
 
 
 class HiveWork:
@@ -117,6 +118,16 @@ Started work...
         with group:
             self._queue.enqueue(*group.jobs)
         return group
+
+    def pipeline_commit(self, pipeline: 'Pipeline'):
+        """
+        Commit a pipeline of jobs to the queue.
+        The jobs will be executed sequentially, with each job's output
+        becoming the next job's input.
+        """
+        with pipeline:
+            self._queue.enqueue(*pipeline.jobs)
+        return pipeline
 
     def __len__(self) -> int:
         return self._queue.size
