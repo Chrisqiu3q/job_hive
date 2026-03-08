@@ -11,7 +11,7 @@ from job_hive.utils import get_now
 
 if TYPE_CHECKING:
     from job_hive.queue import RedisQueue
-    from job_hive import Group
+    from job_hive import Group, Pipeline
 
 
 class HiveWork:
@@ -61,6 +61,9 @@ Started work...
                         job.query["status"] = Status.SUCCESS.value
                         self.logger.info(f"Successes job: {job.job_id}")
                         self._queue.ttl(job.job_id, result_ttl)
+                        
+                        if job.pipeline_next_job_id:
+                            self._enqueue_next_pipeline_job(job)
                     except Exception as e:
                         job.query["error"] = "{}\n{}".format(e, traceback.format_exc())
                         job.query["status"] = Status.FAILURE.value
@@ -88,6 +91,35 @@ Started work...
             if job.status in (Status.SUCCESS, Status.FAILURE):
                 return job
             time.sleep(5)
+
+    def _enqueue_next_pipeline_job(self, current_job: 'Job'):
+        """
+        Enqueue the next job in the pipeline with the result of the current job.
+        """
+        next_job_id = current_job.pipeline_next_job_id
+        if not next_job_id:
+            return
+            
+        next_job = self.get_job(next_job_id)
+        if not next_job:
+            self.logger.warning(f"Next pipeline job {next_job_id} not found")
+            return
+        
+        prev_result = current_job.result
+        if prev_result is not None:
+            try:
+                prev_result = eval(prev_result) if isinstance(prev_result, str) else prev_result
+            except:
+                pass
+        
+        if isinstance(prev_result, tuple):
+            next_job._args = prev_result
+        elif prev_result is not None:
+            next_job._args = (prev_result,)
+        
+        next_job.query["status"] = Status.PENDING.value
+        self._queue.enqueue(next_job)
+        self.logger.info(f"Enqueued next pipeline job: {next_job.job_id}")
 
     def task(self):
         def decorator(func):
@@ -117,6 +149,23 @@ Started work...
         with group:
             self._queue.enqueue(*group.jobs)
         return group
+
+    def pipeline_commit(self, pipeline: 'Pipeline'):
+        """
+        Commit a pipeline of jobs to the queue. Only the first job is enqueued initially, but all jobs are stored.
+        """
+        with pipeline:
+            for job in pipeline.jobs:
+                self._queue.conn.hset(
+                    name=f"hive:job:{job.job_id}",
+                    mapping=job.dumps()
+                )
+            if pipeline.first_job:
+                self._queue.conn.rpush(
+                    self._queue._queue_name,
+                    pipeline.first_job.job_id
+                )
+        return pipeline
 
     def __len__(self) -> int:
         return self._queue.size
