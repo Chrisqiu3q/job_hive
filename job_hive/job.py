@@ -18,6 +18,9 @@ class Job:
             "created_at": get_now(),
         }
         self._kwargs = kwargs
+        self.pipeline_id: Optional[str] = None
+        self.pipeline_next_job_id: Optional[str] = None
+        self.pipeline_prev_job_id: Optional[str] = None
 
     @staticmethod
     def _get_func_path(func):
@@ -64,6 +67,9 @@ class Job:
             "status": self.status,
             "result": self._dumps(self.result),
             "error": self._dumps(self.error),
+            "pipeline_id": self.pipeline_id,
+            "pipeline_next_job_id": self.pipeline_next_job_id,
+            "pipeline_prev_job_id": self.pipeline_prev_job_id,
         }
 
     @staticmethod
@@ -77,6 +83,10 @@ class Job:
 
         for key in ["created_at", "ended_at", "started_at", "status", "result", "error"]:
             job.query[key] = obj.get(key, '')
+        
+        job.pipeline_id = obj.get("pipeline_id")
+        job.pipeline_next_job_id = obj.get("pipeline_next_job_id")
+        job.pipeline_prev_job_id = obj.get("pipeline_prev_job_id")
         return job
 
     @staticmethod
